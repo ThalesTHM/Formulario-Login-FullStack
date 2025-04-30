@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./encomp.db"
+}
+
+model User {
+  id         String   @id @default(cuid())
+  username   String   @unique
+  password   String
+  createDate DateTime @default(now())
+}
+
+model IpTries {
+  id         String   @id @default(cuid())
+  ip         String
+  tries      Int      @default(0)
+  lastTry    DateTime @default(now())
+  createDate DateTime @default(now())
+}
