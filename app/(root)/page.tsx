@@ -1,4 +1,3 @@
-import { get } from 'http'
 import React from 'react'
 import { authConfig } from '../api/auth/[...nextauth]/route'
 import { getServerSession } from 'next-auth'

@@ -1,12 +1,9 @@
 "use server";
 
-import { signIn } from "next-auth/react";
 import prisma from "./prisma";
 import { checkIpTries, getIpOnActions, hashPass } from "./server-utils";
 import { signupFormSchema } from "./validation";
 import { z } from 'zod'
-
-let bcrypt = require("bcrypt");
 
 export const createUser = async (username: string, password: string) => {
     const userInput = {
@@ -20,7 +17,7 @@ export const createUser = async (username: string, password: string) => {
         if (error instanceof z.ZodError){
             return {
                 success: false,
-                error: "Invalid Inputs"
+                error: "Invalid Inputs."
             }
         } 
         
@@ -30,7 +27,7 @@ export const createUser = async (username: string, password: string) => {
         }
     }
 
-    let hashedPassword = await hashPass(password);
+    const hashedPassword = await hashPass(password);
 
     try{
         await prisma.user.create({
@@ -49,10 +46,10 @@ export const createUser = async (username: string, password: string) => {
     }
 
     if(!(await checkIpTries(null))){
-        let ip = (await getIpOnActions()) as string;
+        const ip = (await getIpOnActions()) as string;
         
         try{
-            let ipTry = await prisma.ipTries.findFirst({
+            const ipTry = await prisma.ipTries.findFirst({
                 where: {
                     ip: ip,
                 }
@@ -67,7 +64,7 @@ export const createUser = async (username: string, password: string) => {
                     lastTry: new Date(Date.now())
                 }
             });
-        } catch (error) {
+        } catch {
             return {
                 success: false,
                 error: "An unexpected error happened."
@@ -82,10 +79,10 @@ export const createUser = async (username: string, password: string) => {
 }
 
 export const getCurrentTry = async () => {
-    let ip = (await getIpOnActions()) as string;
+    const ip = (await getIpOnActions()) as string;
 
     try{
-        let ipTry = await prisma.ipTries.findFirst({
+        const ipTry = await prisma.ipTries.findFirst({
             where: {
                 ip: ip,
             }
@@ -99,7 +96,7 @@ export const getCurrentTry = async () => {
             },
             error: ""
         };
-    } catch (error) {
+    } catch  {
         return {
             success: false,
             response: {},

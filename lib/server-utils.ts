@@ -1,9 +1,9 @@
 "server only";
 
-import { NextApiRequest } from "next";
 import prisma from "./prisma";
 import { RequestInternal } from "next-auth";
 import { headers } from "next/headers";
+import bcrypt from "bcrypt";
 
 type AuthRequest = Pick<
   RequestInternal,
@@ -14,7 +14,6 @@ type AuthRequest = Pick<
     }
 };
 
-const bcrypt = require("bcrypt");
 const THIRTY_SECONDS = 30 * 1000
 
 export const hashPass = (unHashPass: string) => {
@@ -33,7 +32,7 @@ const getIp = (req: AuthRequest) => {
 export const getIpOnActions = async () => {
     const headersList = await headers();
     const fwd = headersList.get("x-forwarded-for") || "";
-    let ip = fwd.split(",")[0];
+    const ip = fwd.split(",")[0];
 
     return ip;
 }
@@ -68,7 +67,7 @@ export const checkIpTries = async (req: AuthRequest | null) => {
                     lastTry: ipTry?.lastTry
                 }
             });
-        } catch (error) {
+        } catch {
             return false;
         }
 
@@ -111,7 +110,7 @@ export const addIpTry = async (req: AuthRequest) => {
                 }
             });
         }
-    } catch (error) {
+    } catch {
         return false;
     }
 

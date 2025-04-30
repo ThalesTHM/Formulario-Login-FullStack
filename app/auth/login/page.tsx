@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { loginFormSchema } from '@/lib/validation';
 import { toast } from 'sonner';
@@ -23,13 +23,13 @@ const Login = () => {
   const timeLeft = useRef(THIRTY_SECONDS);
   const resetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [state, formAction, isPending] = useActionState(handleLogin, {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_loginState, formAction, isPending] = useActionState(handleLogin, {
     error: '',
     status: 'INITIAL',
   });
 
   useEffect(() => {
-    let mounted = true;
     getCurrentTry().then(res => {
       if (!res.success) {
         return;
@@ -57,16 +57,13 @@ const Login = () => {
 
       setIsLoading(false);
     });
-
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   if (isLoading) {
     return <LoginFormSkeleton />;
   }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function handleLogin(prevState: any, formData: FormData) {
     try {
       setErrors({});

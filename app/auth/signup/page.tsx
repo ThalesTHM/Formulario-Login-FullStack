@@ -11,12 +11,11 @@ import { createUser } from '@/lib/actions';
 import { signIn } from 'next-auth/react';
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   
   const router = useRouter();
-
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSignup = async (prevState: any, formData: FormData) => {
     try{
       setErrors({});
@@ -28,10 +27,10 @@ const Signup = () => {
 
       await signupFormSchema.parseAsync(formValues);
 
-      let resCreateUser = await createUser(formValues.username, formValues.password)
+      const resCreateUser = await createUser(formValues.username, formValues.password)
 
       if (!resCreateUser.success) {
-        toast.error("Erro ao cadastrar.")
+        toast.error(resCreateUser.error)
 
         return {
           ... prevState, error: resCreateUser.error, status: "ERROR"
@@ -40,7 +39,7 @@ const Signup = () => {
 
       toast.success("Cadastrado com Sucesso!");
 
-      let resSignIn = await signIn("credentials", {
+      const resSignIn = await signIn("credentials", {
         username: formValues.username,
         password: formValues.password,
         redirect: false
@@ -84,6 +83,7 @@ const Signup = () => {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, formAction, isPending] = useActionState(handleSignup, {
     error: "",
     status: "INITIAL",

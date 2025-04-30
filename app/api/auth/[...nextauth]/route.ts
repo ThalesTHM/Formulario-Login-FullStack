@@ -1,11 +1,26 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import prisma from "@/lib/prisma"
 import CredentialsProvider from "next-auth/providers/credentials"
-import NextAuth, { Session, SessionStrategy, TokenSet } from "next-auth"
-import { User } from "@/generated/prisma"
+import NextAuth, { SessionStrategy, DefaultSession, AuthOptions } from "next-auth"
 import { addIpTry, checkIpTries } from "@/lib/server-utils"
+import bcrypt from "bcrypt";
 
-let bcrypt = require('bcrypt')
+
+declare module "next-auth" {
+  interface Session {
+    user: { id: string } & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT { id?: string }
+}
+
+type _RawCbs = AuthOptions["callbacks"];
+
+// 2) Extract just the `jwt` and `session` function types  
+type JWTCallback = NonNullable<NonNullable<_RawCbs>["jwt"]>;  
+type SessionCallback = NonNullable<NonNullable<_RawCbs>["session"]>;
 
 export const authConfig = {
   adapter: PrismaAdapter(prisma),
@@ -48,19 +63,22 @@ export const authConfig = {
   },
   secret: process.env.NEXT_PUBLIC_AUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-      }
-      return token
+    async jwt( 
+      params: Parameters<JWTCallback>[0] 
+    ) {
+      const { token, user } = params;
+      if (user) token.id = user.id;
+      return token;              
     },
-    async session({ session, token }) {
+
+    async session(
+      params: Parameters<SessionCallback>[0]
+    ) {
+      const { session, token } = params;
       if (session.user && token.id) {
-        Object.assign(session, {
-          id: token.id,
-        })
+        session.user.id = token.id as string;
       }
-      return session
+      return session;            
     }
   }
 }
