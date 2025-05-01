@@ -32,6 +32,7 @@ const Login = () => {
   useEffect(() => {
     getCurrentTry().then(res => {
       if (!res.success) {
+        setIsLoading(false)
         return;
       } else {
         if(res.response.tries as number < MAX_TRIES) {
