@@ -13,9 +13,6 @@ Banco de dados está no prisma -> encomp.db (SQLite)
 Há a minha conta e também a do "eduardo":
 Senha: Edu@rdo123
 
-A minha senha: Th@lesHenrique123
-
-
 TUTORIAL DE COMO RODAR:
 
 digite isso no terminal
